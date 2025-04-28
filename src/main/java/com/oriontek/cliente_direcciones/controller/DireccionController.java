@@ -30,6 +30,9 @@ public class DireccionController {
 
     @PostMapping
     public Direccion crearDireccion(@RequestBody Direccion direccion) {
+        if (direccion.getCliente() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El cliente no puede ser nulo");
+        }
         return direccionRepository.save(direccion);
     }
 

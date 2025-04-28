@@ -19,7 +19,7 @@ public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String nombre;
 
     @NotBlank(message = "El email no puede estar vacío")

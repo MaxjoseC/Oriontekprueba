@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Direccion {
@@ -19,7 +20,7 @@ public class Direccion {
     private Long id;
 
     private String direccion;
-
+    @NotNull(message = "La dirección no puede ser nula")
     private String codigoPostal;
 
     private String provincia;
@@ -32,6 +33,8 @@ public class Direccion {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     @JsonBackReference               // evitar bucle infinito en serializacion
+    @NotNull(message = "El cliente no puede ser nulo")
+    // @NotNull(message = "El cliente no puede ser nulo")   
     private Cliente cliente;
 
     // get y set
