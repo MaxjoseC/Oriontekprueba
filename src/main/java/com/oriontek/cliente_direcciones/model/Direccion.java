@@ -2,8 +2,6 @@ package com.oriontek.cliente_direcciones.model;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,10 +30,11 @@ public class Direccion {
     // Relacion con cliente
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference               // evitar bucle infinito en serializacion
     @NotNull(message = "El cliente no puede ser nulo")
     // @NotNull(message = "El cliente no puede ser nulo")   
     private Cliente cliente;
+
+
 
     // get y set
     public Long getId() { return id; }
@@ -52,6 +51,7 @@ public class Direccion {
 
     public String getPais() { return pais; }
     public void setPais(String pais) { this.pais = pais; }
+
     //    public LocalDate getUltimaActualizacion() { return ultimaActualizacion; }
     public LocalDateTime getUltimaActualizacion() { return ultimaActualizacion; }
     public void setUltimaActualizacion(LocalDateTime ultimaActualizacion) { this.ultimaActualizacion = ultimaActualizacion; }

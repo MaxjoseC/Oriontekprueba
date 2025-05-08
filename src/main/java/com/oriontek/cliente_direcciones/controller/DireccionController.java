@@ -1,11 +1,9 @@
 package com.oriontek.cliente_direcciones.controller;
 
-// Controoller para 
-//
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +12,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.oriontek.cliente_direcciones.dto.DireccionDTO;
+import com.oriontek.cliente_direcciones.mapper.DireccionMapper;
 import com.oriontek.cliente_direcciones.model.Direccion;
 import com.oriontek.cliente_direcciones.repository.DireccionRepository;
-
-// endpoints para direcciones
 
 @RestController
 @RequestMapping("/direcciones")
@@ -28,32 +25,36 @@ public class DireccionController {
     @Autowired
     private DireccionRepository direccionRepository;
 
-    @PostMapping
-    public Direccion crearDireccion(@RequestBody Direccion direccion) {
-        if (direccion.getCliente() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El cliente no puede ser nulo");
-        }
-        return direccionRepository.save(direccion);
-    }
-
     @GetMapping("/{id}")
-    public Direccion obtenerDireccion(@PathVariable Long id) {
-        return direccionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dirección no encontrada"));
+    public DireccionDTO obtenerDireccionPorId(@PathVariable Long id) {
+        Direccion direccion = direccionRepository.findById(id).orElseThrow();
+        return DireccionMapper.toDTO(direccion);
     }
 
     @GetMapping
-    public List<Direccion> listarDirecciones() {
-        return direccionRepository.findAll();
+    public List<DireccionDTO> obtenerDirecciones() {
+        return direccionRepository.findAll().stream()
+            .map(DireccionMapper::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    @PostMapping
+    public DireccionDTO crearDireccion(@RequestBody DireccionDTO direccionDTO) {
+        Direccion direccion = DireccionMapper.toEntity(direccionDTO);
+        Direccion direccionGuardada = direccionRepository.save(direccion);
+        return DireccionMapper.toDTO(direccionGuardada);
     }
 
     @PutMapping("/{id}")
-    public Direccion actualizarDireccion(@PathVariable Long id, @RequestBody Direccion direccionDetalles) {
-        Direccion direccion = direccionRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dirección no encontrada"));
+    public DireccionDTO actualizarDireccion(@PathVariable Long id, @RequestBody DireccionDTO direccionDTO) {
+        Direccion direccion = direccionRepository.findById(id).orElseThrow();
+        direccion.setDireccion(direccionDTO.getDireccion());
+        direccion.setCodigoPostal(direccionDTO.getCodigoPostal());
+        direccion.setProvincia(direccionDTO.getProvincia());
+        direccion.setPais(direccionDTO.getPais());
 
-        direccion.setDireccion(direccionDetalles.getDireccion());
-        return direccionRepository.save(direccion);
+        Direccion direccionActualizada = direccionRepository.save(direccion);
+        return DireccionMapper.toDTO(direccionActualizada);
     }
 
     @DeleteMapping("/{id}")
